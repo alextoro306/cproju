@@ -1,0 +1,3 @@
+C:/Users/Alex/OneDrive - Vantaan kaupunki/Työpöytä/cproju/cmake-build-debug/CMakeFiles/cproju.dir
+C:/Users/Alex/OneDrive - Vantaan kaupunki/Työpöytä/cproju/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Alex/OneDrive - Vantaan kaupunki/Työpöytä/cproju/cmake-build-debug/CMakeFiles/rebuild_cache.dir
