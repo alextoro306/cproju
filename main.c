@@ -1,8 +1,7 @@
 #include <stdio.h>
-
 #define MAX_SUBJECTS 100
 
-//määrittelee arvosanan pistemäärän perusteella
+// Määrittelee arvosanan pistemäärän perusteella
 int calculateGrade(float score) {
     if (score >= 90) return 5;
     if (score >= 80) return 4;
@@ -12,83 +11,89 @@ int calculateGrade(float score) {
     return 0;
 }
 
+// print ja tallennustoiminto
+void printAndSave(FILE *file, const char *text) {
+    printf("%s", text); // Tulostus konsoliin
+    fprintf(file, "%s", text); // Kirjotus tiedostoon
+}
+
 int main() {
-    char name[50];
-    int numSubjects;
-    char subjects[MAX_SUBJECTS][50]; //taulukko aiheiden nimien tallentamiseen
-    float scores[MAX_SUBJECTS]; //tallentaa tulokset
-    float totalScore = 0.0;
-    int totalGrades = 0; //laskee arvosanojen keskiarvon
+    char name[50]; // Opiskelijan nimi max 50 merkkiä
+    int numSubjects; // Opiskelijan aineiden lukumäärä
+    char subjects[MAX_SUBJECTS][50]; // Aineiden nimet max 50 merkkiä
+    float scores[MAX_SUBJECTS]; // Pisteet ainetta kohden
+    float totalScore = 0.0; // Kokonaispisteet
+    int totalGrades = 0; // Arvosanojen summa
 
     printf("Welcome to the Student Grade Calculator!\n");
 
-    //kysyy oppilaan nimen ja ottaa sen
+    // Kysyy oppilaan nime ja ottaa sen
     printf("Please enter your name: ");
-    fgets(name, sizeof(name), stdin);
+    fgets(name, sizeof(name), stdin); // stdin standardi syöttö näppäimistöl. size of kuinka monta merkkiä voidaan lukea. eli nimi voi olla mx 50 merkkiä.
 
-    //kysyy aiheiden määrän
+    // Kysyy aineiden määrän
     printf("How many subjects do you want to calculate grades for? ");
-    scanf("%d", &numSubjects);
-    while (getchar() != '\n'); //tyhjä
+    scanf("%d", &numSubjects); // %d lukee luvun integer. muuttuja eli numsubjects johon luettu kokonaisluku tallennetaan.
+    while (getchar() != '\n'); // Tyhjentää turhat merkit ja väli
 
-    //määrittelee aiheiden määrän
+    // Tarkistaa aineiden määrän
     if (numSubjects < 1 || numSubjects > MAX_SUBJECTS) {
         printf("Invalid number of subjects! Please enter a number between 1 and %d.\n", MAX_SUBJECTS);
         return 1;
     }
 
-    //tässä kysytään aiheet ja pisteet
-    for (int i = 0; i < numSubjects; i++) {
-        printf("Enter subject %d name: ", i + 1);
-        scanf(" %[^\n]", subjects[i]); //lukee aiheen nime
-
-        printf("Enter your score for %s (0-100): ", subjects[i]);
-        scanf("%f", &scores[i]);
-
-        //määrittelee pisteet
-        if (scores[i] < 0 || scores[i] > 100) {
-            printf("Invalid score! Please enter a score between 0 and 100.\n");
-            return 1;
-        }
-
-        totalScore += scores[i]; //kerää kokonaispisteet
-        totalGrades += calculateGrade(scores[i]); //laskee arvosanan
-    }
-
-    //Laskee keskimääräsen pistemäärän ja arvosanan
-    float averageScore = totalScore / numSubjects;
-    float averageGrade = (float)totalGrades / numSubjects; //Keskiarvo asteikolla 0-5
-
-    //avaa tiedoston raportin kirjottamiseen
-    FILE *file = fopen("student_report.txt", "w");
-    if (file == NULL) {
-        printf("Error opening file for writing!\n");
+    // Avaa tiedoston raportin kirjoittamiseen
+    FILE *file = fopen("student_report.txt", "w"); //w avaa kirjotustilas tiedoston ja tallentaa sinne tiedot. ja poistaa aiemmat tiedot.
+    if (file == NULL) { // null ei oo vielä alustettu
         return 1;
     }
 
-    //printtaa tiedot konsoliin
-    printf("------------------------------------------\n");
-    printf("Student: %s", name);
-    printf("------------------------------------------\n");
-    printf("Subject             Score   Grade\n");
-    printf("------------------------------------------\n");
+    // Kysyy aineet ja pisteet
+    for (int i = 0; i < numSubjects; i++) { //i = 0 alustetaan nollaks ja se toimii laskurina.
+        printf("Enter subject %d name: ", i + 1);
+        scanf(" %[^\n]", subjects[i]); // Lukee aineen nimen
 
-    //Tulostaa aiheen pisteet ja arvosanat
-    for (int i = 0; i < numSubjects; i++) {
-        int grade = calculateGrade(scores[i]);
-        // leveyden säätö konsoliin
-        printf("%-20s %.0f%%\t%d\n", subjects[i], scores[i], grade); //aiheen, pisteiden ja arvosanan tulostaminen konsoliin
-        fprintf(file, "%-20s %.0f%%\t%d\n", subjects[i], scores[i], grade); //kirjoittaa tiedostoon
+        do { // suoritetaan vähintään kerran. eli jos vaik syöttö on virheellinen niin se kysyy niin pitkään kunnes se syöttö on oikea.
+            printf("Enter your score for %s (0-100): ", subjects[i]); // pyytää käyttäjää syöttämään pisteet tietylle aineelle.
+            scanf("%f", &scores[i]); // tallentaa pisteet muuttujaan.
+
+            // Varmistaa, että pistemäärä on oikea
+            if (scores[i] < 0 || scores[i] > 100) {
+                printf("Invalid score! Please enter a score between 0 and 100.\n");
+            }
+        } while (scores[i] < 0 || scores[i] > 100);
+
+        totalScore += scores[i]; // Kerää kokonaispisteet
+        totalGrades += calculateGrade(scores[i]); // Laskee arvosanan
     }
 
-    //Tulostaa keskimääräisen pistemäärän ja arvosanan
-    printf("------------------------------------------\n");
-    printf("Average Score: %.2f\n", averageScore);
-    printf("Average Grade: %.2f\n", averageGrade);
+    // Laskee keskiarvot pisteistä ja arvosanoista
+    float averageScore = totalScore / numSubjects;
+    float averageGrade = (float)totalGrades / numSubjects;
 
-    //kirjoittaa tiedostoon keskimääräisen pistemäärän ja arvosanan
-    fprintf(file, "------------------------------------------\n");
-    fprintf(file, "Average Score: %.2f\n", averageScore);
-    fprintf(file, "Average Grade: %.2f\n", averageGrade);
+    // Tulostaa tiedot konsoliin ja fileen
+    printAndSave(file, "------------------------------------------\n");
+    printAndSave(file, "Student: ");
+    printAndSave(file, name);
+    printAndSave(file, "------------------------------------------\n");
+    printAndSave(file, "Subject             Score   Grade\n");
+    printAndSave(file, "------------------------------------------\n");
+
+    // Tulostaa aineet, pisteet ja arvosanat tiedostoon ja konsoliin
+    for (int i = 0; i < numSubjects; i++) { // käy läpi kaikki aineet
+        int grade = calculateGrade(scores[i]); // Laskee jokase aineen arvosanan scores[i] perusteella käyttäen calculategrade funktioo.
+        char buffer[100]; // Tallentaa aineen nimen, pisteet ja arvosanan taulukkoon.
+        sprintf(buffer, "%-20s %.0f%%\t%d\n", subjects[i], scores[i], grade); // muotoilee aineen nimen, pisteet ja arvosanan yhteen merkkijonoon ja tallentaa buffer-taulukkoon.
+        printAndSave(file, buffer); // tulostaa tiedot konsoliin ja tiedostoon.
+    }
+
+    // Tulostaa keskiarvot ja lisää tiedostoon
+    printAndSave(file, "------------------------------------------\n");
+    char averageBuffer[100]; // keskiarvojen tallentamiseen
+    sprintf(averageBuffer, "Average Score: %.2f\n", averageScore);
+    printAndSave(file, averageBuffer);
+    sprintf(averageBuffer, "Average Grade: %.2f\n", averageGrade);
+    printAndSave(file, averageBuffer);
+    printAndSave(file, "------------------------------------------\n");
     return 0;
 }

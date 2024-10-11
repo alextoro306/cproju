@@ -1,6 +1,6 @@
-matikka              80%	4
-liikunta             50%	1
-historia             100%	5
+kela                 100%	5
+keilailu             70%	3
+koripallo            50%	1
 ------------------------------------------
-Average Score: 76.67
-Average Grade: 3.33
+Average Score: 73.33
+Average Grade: 3.00
